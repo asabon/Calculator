@@ -2,9 +2,20 @@ name: CI
 
 on:
   push:
-    branches: [ "master" ]
+    branches:
+      - master
+    paths-ignore:
+      - docs/**
+      - README.md
+      - LICENSE
+
   pull_request:
-    branches: [ "master" ]
+    branches:
+      - master
+    paths-ignore:
+      - docs/**
+      - README.md
+      - LICENSE
 
 jobs:
   build:
@@ -43,11 +54,15 @@ jobs:
       - name: Test with Gradle
         run: ./gradlew test --stacktrace
 
+      - run: ls
+      - run: ls build
+      - run: ls build/reports
+
       - name: Upload test results and code coverage Artifact
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
-          name: results
+          name: test-results
           path: |
             **/build/reports/tests/**/*
             **/build/reports/test-results/**/*
@@ -83,7 +98,20 @@ jobs:
       - name: Run Inspection
         run: ./gradlew lint
 
-      - name: Show results on GitHub
-        uses: yutailang0119/action-android-lint@v1
+      - run: ls
+      - run: ls build
+      - run: ls build/reports
+
+#      - name: Show results on GitHub
+#        uses: yutailang0119/action-android-lint@v1
+#        with:
+#          xml_path: '**/build/reports/lint-results-*.xml'
+
+      - name: Upload results Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
         with:
-          xml_path: '**/build/reports/lint-results-*.xml'
+          name: lint-results
+          path: |
+            **/build/reports/lint-results-*.html
+            **/build/reports/lint-results-*.xml
