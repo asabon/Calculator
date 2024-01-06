@@ -87,11 +87,6 @@ jobs:
       - run: ls
       - run: ls build
 
-#      - name: Show results on GitHub
-#        uses: yutailang0119/action-android-lint@v1
-#        with:
-#          xml_path: '**/build/reports/lint-results-*.xml'
-
       - name: Upload results Artifact
         uses: actions/upload-artifact@v4
         if: success() || failure()
@@ -103,6 +98,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
+    #if: github.event_name == 'push'
     needs:
       - unittest
       - lint
@@ -115,11 +111,20 @@ jobs:
           ssh-key: ${{ secrets.SSH_PRIVATE_KEY }}
           persist-credentials: true
 
+      - name: Delete reports
+        run: |
+          rm -rf work/Calculator/reports
+
       - name: Download test-result
         uses: actions/download-artifact@v4
         with:
           name: test-results
           path: ./temp/test-results
+
+      - name: Copy test-result to destination
+        run: |
+          mkdir -p work/Calculator/reports/test-report
+          cp -r temp/test-results/app/build/reports/tests/* work/Calculator/reports/test-report/
 
       - name: Download lint-result
         uses: actions/download-artifact@v4
@@ -127,12 +132,24 @@ jobs:
           name: lint-results
           path: ./temp/lint-results
 
-      - run: ls
-      - run: ls temp
-      - run: ls temp/test-results
-      - run: ls temp/lint-results
+      - name: Copy lint-result to destination
+        run: |
+          mkdir -p work/Calculator/reports/lint-report
+          cp -r temp/lint-results/app/build/reports/* work/Calculator/reports/lint-report/
 
-#      - name: Copy result to destination
-#        run: |
-#          rm -rf doc/Calculator/test-reports
-#          mkdir -p doc/Calculator/test-reports
+      - name: Commit files to git repository
+        run: |
+          git config --global user.email "github-actions@github.com"
+          git config --global user.name "github-actions"
+          cd work/Calculator
+          git add -A
+          if ! git diff --cached --quiet; then
+            git commit -a -m "Add changes"
+          fi
+
+      - name: GitHub Push
+        uses: ad-m/github-push-action@v0.8.0
+        with:
+          directory: work/Calculator
+          repository: asabon/Documents
+          ssh: true
