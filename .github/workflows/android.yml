@@ -36,6 +36,14 @@ jobs:
         run: chmod +x gradlew
       - name: Test with Gradle
         run: ./gradlew test --stacktrace
+      - name: Upload test results and code coverage Artifact
+        uses: actions/upload-artifact@v2
+        if: success() || failure()
+        with:
+          name: results
+          path: |
+            **/build/reports/tests/**/*
+            **/build/reports/test-results/**/*
 
   lint:
     runs-on: ubuntu-latest
