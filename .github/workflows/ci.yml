@@ -56,7 +56,6 @@ jobs:
 
       - run: ls
       - run: ls build
-      - run: ls build/reports
 
       - name: Upload test results and code coverage Artifact
         uses: actions/upload-artifact@v4
@@ -100,7 +99,6 @@ jobs:
 
       - run: ls
       - run: ls build
-      - run: ls build/reports
 
 #      - name: Show results on GitHub
 #        uses: yutailang0119/action-android-lint@v1
