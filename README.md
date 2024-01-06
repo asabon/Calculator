@@ -1,4 +1,4 @@
-[![CI](https://github.com/asabon/Calculator/actions/workflows/android.yml/badge.svg?branch=master)](https://github.com/asabon/Calculator/actions/workflows/android.yml)
+[![CI](https://github.com/asabon/Calculator/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/asabon/Calculator/actions/workflows/ci.yml)
 
 # Calculator
 
