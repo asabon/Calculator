@@ -128,9 +128,9 @@ jobs:
           path: ./temp/lint-results
 
       - run: ls
-      - run: ls app
-      - run: ls app/build
-      - run: ls app/build/reports
+      - run: ls temp
+      - run: ls temp/test-results
+      - run: ls temp/lint-results
 
 #      - name: Copy result to destination
 #        run: |
