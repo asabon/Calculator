@@ -36,3 +36,14 @@ jobs:
         run: chmod +x gradlew
       - name: Test with Gradle
         run: ./gradlew test --stacktrace
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run Inspection
+        run: ./gradlew lint
+      - name: Show results on GitHub
+        uses: yutailang0119/action-android-lint@v1
+        with:
+          xml_path: '**/build/reports/lint-results-*.xml'
