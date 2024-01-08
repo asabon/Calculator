@@ -48,21 +48,91 @@ class CalculatorUnitTest {
         /* === 起動直後 === */
         assertEquals("", calculator.getMainDisplay())
         assertEquals("", calculator.getHistoryDisplay())
+
+        /* === "1" を入力 === */
         calculator.operation(1)
-        /* === "1" を入力後 === */
         assertEquals("1", calculator.getMainDisplay())
         assertEquals("", calculator.getHistoryDisplay())
+
+        /* === "+" を入力 === */
         calculator.operation("+")
-        /* === "+" を入力後 === */
         assertEquals("", calculator.getMainDisplay())
         assertEquals("1 + ", calculator.getHistoryDisplay())
+
+        /* === "2" を入力 === */
         calculator.operation(2)
-        /* === "2" を入力後 === */
         assertEquals("2", calculator.getMainDisplay())
         assertEquals("1 + ", calculator.getHistoryDisplay())
+
+        /* === "=" を入力 === */
         calculator.operation("=")
-        /* === "2" を入力後 === */
         assertEquals("3", calculator.getMainDisplay())
         assertEquals("1 + 2 = ", calculator.getHistoryDisplay())
+    }
+
+    @Test
+    fun operation_NumberAfterEqual() {
+        val calculator = Calculator()
+        /* === 起動直後 === */
+        assertEquals("", calculator.getMainDisplay())
+        assertEquals("", calculator.getHistoryDisplay())
+
+        /* === "1" を入力 === */
+        calculator.operation(1)
+        assertEquals("1", calculator.getMainDisplay())
+        assertEquals("", calculator.getHistoryDisplay())
+
+        /* === "+" を入力 === */
+        calculator.operation("+")
+        assertEquals("", calculator.getMainDisplay())
+        assertEquals("1 + ", calculator.getHistoryDisplay())
+
+        /* === "2" を入力 === */
+        calculator.operation(2)
+        assertEquals("2", calculator.getMainDisplay())
+        assertEquals("1 + ", calculator.getHistoryDisplay())
+
+        /* === "=" を入力 === */
+        calculator.operation("=")
+        assertEquals("3", calculator.getMainDisplay())
+        assertEquals("1 + 2 = ", calculator.getHistoryDisplay())
+
+        /* === "=" の後に "4" を入力 === */
+        calculator.operation(4)
+        assertEquals("4", calculator.getMainDisplay())
+        assertEquals("", calculator.getHistoryDisplay())
+    }
+
+    @Test
+    fun operation_PlusAfterEqual() {
+        val calculator = Calculator()
+        /* === 起動直後 === */
+        assertEquals("", calculator.getMainDisplay())
+        assertEquals("", calculator.getHistoryDisplay())
+
+        /* === "1" を入力 === */
+        calculator.operation(1)
+        assertEquals("1", calculator.getMainDisplay())
+        assertEquals("", calculator.getHistoryDisplay())
+
+        /* === "+" を入力 === */
+        calculator.operation("+")
+        assertEquals("", calculator.getMainDisplay())
+        assertEquals("1 + ", calculator.getHistoryDisplay())
+
+        /* === "2" を入力 === */
+        calculator.operation(2)
+        assertEquals("2", calculator.getMainDisplay())
+        assertEquals("1 + ", calculator.getHistoryDisplay())
+
+        /* === "=" を入力 === */
+        calculator.operation("=")
+        assertEquals("3", calculator.getMainDisplay())
+        assertEquals("1 + 2 = ", calculator.getHistoryDisplay())
+
+        /* === "=" の後に "+" を入力 === */
+        calculator.operation("+")
+        assertEquals("", calculator.getMainDisplay())
+        assertEquals("3 + ", calculator.getHistoryDisplay())
     }
 }

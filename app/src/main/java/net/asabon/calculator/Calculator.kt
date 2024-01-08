@@ -62,6 +62,10 @@ class Calculator {
             /* 計算できるように null を 0 に置き換える */
             mTempNumber = 0
         }
+        if (mCurrentMode == "=") {
+            /* "=" 直後の記号の場合 */
+            mHistoryDisplay = ""
+        }
         if (mWorkNumber == null) {
             /* "+" などの演算記号が連続で押された場合は何もしない */
         } else {
@@ -105,6 +109,10 @@ class Calculator {
 
     private fun updateNumber(baseNumber: Int?, newNumber: Int) : Int {
         if (baseNumber == null) {
+            return newNumber
+        }
+        if (mCurrentMode == "=") {
+            mHistoryDisplay = ""
             return newNumber
         }
         return (baseNumber * 10) + newNumber
