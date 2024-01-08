@@ -2,15 +2,15 @@
 
 # Calculator
 
-## Overview
+## 概要
 
-- Simple calculator for Android.
+- アプリ開発の練習を目的とした Android 向けのシンプルな電卓アプリ
 
 ## Test results
 
-- [Test report(Debug)](https://asabon.github.io/Documents/Calculator/reports/test-report/testDebugUnitTest/)
-- [Test report(Release)](https://asabon.github.io/Documents/Calculator/reports/test-report/testReleaseUnitTest/)
+- [UnitTest report(Debug)](https://asabon.github.io/Documents/Calculator/reports/test-report/testDebugUnitTest/)
+- [UnitTest report(Release)](https://asabon.github.io/Documents/Calculator/reports/test-report/testReleaseUnitTest/)
 
 ## Lint results
 
-- [Test report(Debug)](https://asabon.github.io/Documents/Calculator/reports/lint-report/lint-results-debug.html)
+- [Lint report(Debug)](https://asabon.github.io/Documents/Calculator/reports/lint-report/lint-results-debug.html)
