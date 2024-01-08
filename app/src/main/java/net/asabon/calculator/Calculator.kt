@@ -18,119 +18,156 @@ import androidx.compose.ui.unit.sp
 import net.asabon.calculator.ui.theme.CalculatorTheme
 
 class Calculator {
-    private var mMainDisplay: String = ""
-    private var mHistoryDisplay: String = ""
-    private var mCurrentMode: String = ""
+    private var mainDisplay : Display = Display()
+    //private var subDisplay : Display = Display()
+    private var mOperation: String = ""
+    private var mWorkNumber: Number = Number()
+    private val nList = ArrayList<Double>()
+    private val oList = ArrayList<String>()
 
-    private var mWorkNumber: Int? = null
-    private var mTempNumber: Int? = null
-
-    fun setMainDisplay(message: String) {
-        mMainDisplay = message
-    }
     /**
-     * @brier メインディスプレイの文字列を取得する
+     * メインディスプレイに強制的に文字列をセットする。
+     *
+     * デバッグやテスト用途で使用する。
+     */
+    fun setMainDisplay(message: String) {
+        mainDisplay.setMessage(message)
+    }
+
+    /**
+     * メインディスプレイの文字列を取得する。
+     *
+     * アプリが「表示部」に出力する文字列を取得するのに使用する。
      */
     fun getMainDisplay() : String {
-        return mMainDisplay
-    }
-
-    fun setHistoryDisplay(message: String) {
-        mHistoryDisplay = message
+        return mainDisplay.getMessage()
     }
 
     /**
-     * @brier テストコードから呼び出す
+     * 履歴ディスプレイに強制的に文字列をセットする。
+     *
+     * デバッグやテスト用途で使用する。
      */
-    fun getHistoryDisplay() : String {
-        return mHistoryDisplay
+    /*
+    fun setSubDisplay(message: String) {
+        subDisplay.setMessage(message)
     }
+     */
 
-    fun operation(key: Any) {
+    /**
+     * 履歴ディスプレイの文字列を取得する。
+     *
+     * アプリが「表示部」に出力する文字列を取得するのに使用する。
+     */
+    /*
+    fun getSubDisplay(): String {
+        return subDisplay.getMessage()
+    }
+     */
+
+    /**
+     * キーを一つ押したときの動作
+     *
+     * @return メインディスプレイに出力したい文字列
+     */
+    fun pushKey(key: String) {
         when (key) {
-            is Int -> mWorkNumber = updateNumber(mWorkNumber, key)
-            "+", "-", "*", "/", "=" -> calc(key.toString())
-            "C" -> clear()
-            else -> println("error")
-        }
-        mMainDisplay = getDisplayMessage(mWorkNumber)
-    }
-
-    private fun calc(key: String) {
-        if (mTempNumber == null) {
-            /* 初期状態では mTempNumber は null */
-            /* 計算できるように null を 0 に置き換える */
-            mTempNumber = 0
-        }
-        if (mCurrentMode == "=") {
-            /* "=" 直後の記号の場合 */
-            mHistoryDisplay = ""
-        }
-        if (mWorkNumber == null) {
-            /* "+" などの演算記号が連続で押された場合は何もしない */
-        } else {
-            /* 計算を行う */
-            mTempNumber = calculate(mTempNumber!!, mCurrentMode, mWorkNumber!!)
-            mHistoryDisplay = mHistoryDisplay + mWorkNumber.toString() + " " + key + " "
-            mCurrentMode = key
-            if (key == "=") {
-                mMainDisplay = getDisplayMessage(mTempNumber)
-                mWorkNumber = mTempNumber
-            } else {
-                mMainDisplay = getDisplayMessage(null)
-                mWorkNumber = null
+            "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "." -> {
+                if (mOperation == "=") {
+                    mOperation = ""
+                    //subDisplay.setMessage("")
+                }
+                mainDisplay.setMessage(mWorkNumber.putKey(key))
+            }
+            "+", "-", "*", "/", "=" -> {
+                if (mWorkNumber.getNumber() != "") {
+                    nList.add(mWorkNumber.getNumber().toDouble())
+                    oList.add(mOperation)
+                    mWorkNumber.clear()
+                    mOperation = key
+                    printList()
+                    if (key == "=") {
+                        /* 計算する */
+                        mainDisplay.setMessage(calculate().toString())
+                        //subDisplay.setMessage(getHistory())
+                    } else {
+                        /* メインディスプレイをクリアする */
+                        mainDisplay.setMessage("")
+                        //subDisplay.setMessage(getHistory())
+                    }
+                } else {
+                    mWorkNumber.setNumber(mainDisplay.getMessage())
+                    mainDisplay.setMessage("")
+                    //subDisplay.setMessage(getHistory())
+                }
+            }
+            "C" -> {
+                mainDisplay.clear()
+                //subDisplay.clear()
+                mWorkNumber.clear()
+                mOperation = ""
+                oList.clear()
+                nList.clear()
             }
         }
     }
-    private fun clear() {
-        mTempNumber = null
-        mWorkNumber = null
+
+    /**
+     * サブディスプレイに表示する「履歴」を生成する
+     */
+    /*
+    private fun getHistory(): String {
+        var history: String = ""
+        history = nList[0].toString()
+        for (i in 1 until nList.size) {
+            history += " " + oList[i] + " " + nList[i].toString()
+        }
+        history += " $mOperation "
+        return history
+    }
+     */
+
+    /**
+     * リスト (nList, oList) をダンプする（デバッグ用途）
+     */
+    private fun printList() {
+        println("===")
+        println("nList.size = " + nList.size)
+        for (i in 0 until nList.size) {
+            println("oList[" + i + "] = " + oList[i])
+            println("nList[" + i + "] = " + nList[i].toString())
+        }
     }
 
-    private fun calculate(before: Int, mode: String, after: Int): Int? {
-        if (mode == "/") {
-            if (after == 0) {
-                /* 0 割りは null を返す */
-                return null
+    private fun calculate() : Double {
+        var temp : Double = nList[0]
+        for (i in 1 until nList.size) {
+            when (oList[i]) {
+                "+" -> temp += nList[i]
+                "-" -> temp -= nList[i]
+                "*" -> temp /= nList[i]
+                "/" -> temp /= nList[i]
+                else -> println("error")
             }
         }
-        return when(mode) {
-            "+" -> before + after
-            "-" -> before - after
-            "*" -> before * after
-            "/" -> before / after
-            else -> after
-        }
-    }
-
-    private fun getDisplayMessage(number: Int?) : String {
-        return number?.toString() ?: ""
-    }
-
-    private fun updateNumber(baseNumber: Int?, newNumber: Int) : Int {
-        if (baseNumber == null) {
-            return newNumber
-        }
-        if (mCurrentMode == "=") {
-            mHistoryDisplay = ""
-            return newNumber
-        }
-        return (baseNumber * 10) + newNumber
+        return temp
     }
 
     @Composable
     fun Layout() {
-        var historyDisplayMessage by remember { mutableStateOf("") }
+        //var subDisplayMessage by remember { mutableStateOf("") }
         var mainDisplayMessage by remember { mutableStateOf("") }
         Column{
+            /*
             Text(
-                text = historyDisplayMessage,
+                text = subDisplayMessage,
                 textAlign = TextAlign.Right,
                 fontSize = 20.sp,
                 modifier = Modifier
                     .fillMaxWidth()
                     .align(Alignment.End)
             )
+             */
             Text(
                 text = mainDisplayMessage,
                 textAlign = TextAlign.Right,
@@ -139,142 +176,180 @@ class Calculator {
                     .fillMaxWidth()
                     .align(Alignment.End)
             )
-            Row{
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 Button(
                     onClick = {
-                        operation(7)
+                        pushKey("C")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
+                    }
+                ) {
+                    Text("C")
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Button(
+                    onClick = {
+                        pushKey("7")
+                        mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("7")
                 }
                 Button(
                     onClick = {
-                        operation(8)
+                        pushKey("8")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("8")
                 }
                 Button(
                     onClick = {
-                        operation(9)
+                        pushKey("9")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("9")
                 }
                 Button(
                     onClick = {
-                        operation("+")
+                        pushKey("+")
                         mainDisplayMessage = getMainDisplay()
-                        historyDisplayMessage = getHistoryDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("+")
                 }
             }
-            Row{
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            )
+            {
                 Button(
                     onClick = {
-                        operation(4)
+                        pushKey("4")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("4")
                 }
                 Button(
                     onClick = {
-                        operation(5)
+                        pushKey("5")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("5")
                 }
                 Button(
                     onClick = {
-                        operation(6)
+                        pushKey("6")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("6")
                 }
                 Button(
                     onClick = {
-                        operation("-")
+                        pushKey("-")
                         mainDisplayMessage = getMainDisplay()
-                        historyDisplayMessage = getHistoryDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("-")
                 }
             }
-            Row{
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 Button(
                     onClick = {
-                        operation(1)
+                        pushKey("1")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("1")
                 }
                 Button(
                     onClick = {
-                        operation(2)
+                        pushKey("2")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("2")
                 }
                 Button(
                     onClick = {
-                        operation(3)
+                        pushKey("3")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("3")
                 }
                 Button(
                     onClick = {
-                        operation("*")
+                        pushKey("*")
                         mainDisplayMessage = getMainDisplay()
-                        historyDisplayMessage = getHistoryDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("*")
                 }
             }
-            Row{
+            Row(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+            ) {
                 Button(
                     onClick = {
-                        operation(0)
+                        pushKey("0")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("0")
                 }
                 Button(
                     onClick = {
-                        operation(".")
+                        pushKey(".")
                         mainDisplayMessage = getMainDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text(".")
                 }
                 Button(
                     onClick = {
-                        operation("=")
+                        pushKey("=")
                         mainDisplayMessage = getMainDisplay()
-                        historyDisplayMessage = getHistoryDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("=")
                 }
                 Button(
                     onClick = {
-                        operation("/")
+                        pushKey("/")
                         mainDisplayMessage = getMainDisplay()
-                        historyDisplayMessage = getHistoryDisplay()
+                        //subDisplayMessage = getSubDisplay()
                     }
                 ) {
                     Text("/")
@@ -293,4 +368,3 @@ class Calculator {
         }
     }
 }
-
