@@ -66,6 +66,35 @@ jobs:
             **/build/reports/tests/**/*
             **/build/reports/test-results/**/*
 
+  instrumented:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: gradle
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
+      - name: Test with Gradle
+        run: ./gradlew cAT --stacktrace
+
+      - run: ls
+      - run: ls build
+
+      - name: Upload test results and code coverage Artifact
+        uses: actions/upload-artifact@v4
+        if: success() || failure()
+        with:
+          name: cAT-results
+          path: |
+            **/build/**/connected
+
   lint:
     runs-on: ubuntu-latest
     steps:

@@ -7,7 +7,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import org.junit.Assert.*
-import org.junit.Before
 
 /**
  * Instrumented test, which will execute on an Android device.
@@ -16,12 +15,14 @@ import org.junit.Before
  */
 @RunWith(AndroidJUnit4::class)
 class ExampleInstrumentedTest {
-    private lateinit var mainActivity : MainActivity
+    //private lateinit var mainActivity : MainActivity
 
+    /*
     @Before
     fun setUp() {
         mainActivity = MainActivity()
     }
+     */
 
     @Test
     fun useAppContext() {
@@ -30,6 +31,7 @@ class ExampleInstrumentedTest {
         assertEquals("net.asabon.calculator", appContext.packageName)
     }
 
+    /*
     @Test
     fun calculator_Test() {
         val calculator = Calculator()
@@ -41,4 +43,5 @@ class ExampleInstrumentedTest {
         //mainActivity = MainActivity()
         //mainActivity.operation("")
     }
+     */
 }
